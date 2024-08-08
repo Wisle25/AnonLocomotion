@@ -30,7 +30,8 @@ public class AnonLocomotion : ModuleRules
 				"Niagara",
 				"EnhancedInput",
 				"PhysicsCore",
-				"NavigationSystem"
+				"NavigationSystem",
+				"MotionWarping"
 			}
 			);
 			

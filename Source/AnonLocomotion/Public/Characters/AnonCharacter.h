@@ -9,6 +9,8 @@
 #include "Data/LocomotionStruct.h"
 #include "AnonCharacter.generated.h"
 
+class UTraversalComponent;
+class UMotionWarpingComponent;
 class AAnonPlayerController;
 struct FInputActionValue;
 class UAnonCharacterMovement;
@@ -493,4 +495,13 @@ protected:
 
 	/** We won't use curve based movement and a few other features on networked games */
 	bool bEnableNetworkOptimizations = false;
+
+protected:
+	// ==================== Components ==================== //
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMotionWarpingComponent> MotionWarping;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTraversalComponent> Traversal;
 };

@@ -6,9 +6,11 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "MotionWarpingComponent.h"
 #include "Camera/AnonPlayerCameraBehavior.h"
 #include "Components/AnonCharacterMovement.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/TraversalComponent.h"
 #include "Controller/AnonPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -45,6 +47,10 @@ AAnonCharacter::AAnonCharacter(const FObjectInitializer& ObjectInitializer)
 	GetCharacterMovement()->BrakingDecelerationFlying = 1000.f;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->NavAgentProps.bCanFly = true;
+
+	// Components
+	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>("Motion Warping");
+	Traversal = CreateDefaultSubobject<UTraversalComponent>("Traversal System");
 }
 // ==================== Lifecycles ==================== //
 
@@ -157,6 +163,9 @@ void AAnonCharacter::Tick(float DeltaTime)
 	else if (MovementState == EMovementState::InAir)
 	{
 		UpdateInAirRotation(DeltaTime);
+
+		// This one is try to reach any obstacle to get climb/mantle
+		Traversal->TriggerTraversalAction();
 	}
 	else if (MovementState == EMovementState::Ragdoll)
 	{
@@ -1213,7 +1222,7 @@ void AAnonCharacter::JumpAction(const FInputActionValue& InputValue)
 			{
 				if (Stance == EStance::Standing)
 				{
-					Jump();
+					Traversal->TriggerTraversalAction(true);	
 				}
 				else if (Stance == EStance::Crouching)
 				{

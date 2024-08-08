@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Data/LocomotionStruct.h"
+#include "Data/TraversalEnum.h"
 #include "Library/LocomotionEnumHelper.h"
 #include "AnonAnimInstance.generated.h"
 
@@ -265,10 +266,29 @@ public:
 
 private:
 	FTimerHandle OnPivotTimer;
-
 	FTimerHandle PlayDynamicTransitionTimer;
-
 	FTimerHandle OnJumpedTimer;
 
 	bool bCanPlayDynamicTransition = true;
+
+	// ==================== Traversal System ==================== //
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal System")
+	ETraversalState TraversalState = ETraversalState::FreeRoam;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal System")
+	ETraversalAction TraversalAction = ETraversalAction::NoAction;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal System")
+	ETraversalDirection TraversalDirection = ETraversalDirection::Forward;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Traversal System")
+	EClimbStyle ClimbStyle = EClimbStyle::BracedClimb;
+	
+public:
+
+	bool SetTraversalState(const ETraversalState NewState);
+	bool SetTraversalAction(const ETraversalAction NewAction);
+	bool SetTraversalDirection(const ETraversalDirection NewDirection);
+	bool SetClimbStyle(const EClimbStyle NewStyle);
 };

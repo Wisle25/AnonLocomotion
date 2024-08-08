@@ -50,7 +50,7 @@ void UAnonAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeThreadSafeUpdateAnimation(DeltaSeconds);
 
-	if (!Character.IsValid() || DeltaSeconds == 0.0f) return;
+	if (!Character.IsValid() || DeltaSeconds == 0.f) return;
 
 	// Update rest of character information. Others are reflected into anim bp when they're set inside character class
 	CharacterInformation.MovementInputAmount = Character->GetMovementInputAmount();
@@ -87,7 +87,7 @@ void UAnonAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 		if (bPrevShouldMove == false && Grounded.bShouldMove)
 		{
 			// Do When Starting To Move
-			TurnInPlaceValues.ElapsedDelayTime = 0.0f;
+			TurnInPlaceValues.ElapsedDelayTime = 0.f;
 			Grounded.bRotateL = false;
 			Grounded.bRotateR = false;
 		}
@@ -116,7 +116,7 @@ void UAnonAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 			}
 			else
 			{
-				TurnInPlaceValues.ElapsedDelayTime = 0.0f;
+				TurnInPlaceValues.ElapsedDelayTime = 0.f;
 			}
 		}
 	}
@@ -136,7 +136,7 @@ void UAnonAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (!Character.IsValid() || DeltaSeconds == 0.0f) return;
+	if (!Character.IsValid() || DeltaSeconds == 0.f) return;
 
 	if (MovementState.Grounded() && !Grounded.bShouldMove && CanDynamicTransition())
 	{
@@ -148,7 +148,7 @@ void UAnonAnimInstance::PlayTransition(const FDynamicMontageParams& Parameters)
 {
 	PlaySlotAnimationAsDynamicMontage(Parameters.Animation, NAME_Grounded___Slot,
 	                                  Parameters.BlendInTime, Parameters.BlendOutTime, Parameters.PlayRate, 1,
-	                                  0.0f, Parameters.StartTime);
+	                                  0.f, Parameters.StartTime);
 }
 
 void UAnonAnimInstance::PlayTransitionChecked(const FDynamicMontageParams& Parameters)
@@ -179,7 +179,7 @@ void UAnonAnimInstance::PlayDynamicTransition(float ReTriggerDelay, const FDynam
 bool UAnonAnimInstance::ShouldMoveCheck() const
 {
 	return (CharacterInformation.bIsMoving && CharacterInformation.bHasMovementInput) ||
-		CharacterInformation.Speed > 150.0f;
+		CharacterInformation.Speed > 150.f;
 }
 
 bool UAnonAnimInstance::CanRotateInPlace() const
@@ -240,14 +240,14 @@ void UAnonAnimInstance::UpdateAimingValues(float DeltaSeconds)
 	if (!RotationMode.VelocityDirection())
 	{
 		// Clamp the Aiming Pitch Angle to a range of 1 to 0 for use in the vertical aim sweeps.
-		AimingValues.AimSweepTime = FMath::GetMappedRangeValueClamped<float, float>({-90.0f, 90.0f}, {1.0f, 0.0f},
+		AimingValues.AimSweepTime = FMath::GetMappedRangeValueClamped<float, float>({-90.f, 90.f}, {1.f, 0.f},
 		                                                              AimingValues.AimingAngle.Y);
 
 		// Use the Aiming Yaw Angle divided by the number of spine+pelvis bones to get the amount of spine rotation
 		// needed to remain facing the camera direction.
-		AimingValues.SpineRotation.Roll = 0.0f;
-		AimingValues.SpineRotation.Pitch = 0.0f;
-		AimingValues.SpineRotation.Yaw = AimingValues.AimingAngle.X / 4.0f;
+		AimingValues.SpineRotation.Roll = 0.f;
+		AimingValues.SpineRotation.Pitch = 0.f;
+		AimingValues.SpineRotation.Yaw = AimingValues.AimingAngle.X / 4.f;
 	}
 	else if (CharacterInformation.bHasMovementInput)
 	{
@@ -255,7 +255,7 @@ void UAnonAnimInstance::UpdateAimingValues(float DeltaSeconds)
 		// This value is used in the aim offset behavior to make the character look toward the Movement Input.
 		Delta = CharacterInformation.MovementInput.ToOrientationRotator() - CharacterInformation.CharacterActorRotation;
 		Delta.Normalize();
-		const float InterpTarget = FMath::GetMappedRangeValueClamped<float, float>({-180.0f, 180.0f}, {0.0f, 1.0f}, Delta.Yaw);
+		const float InterpTarget = FMath::GetMappedRangeValueClamped<float, float>({-180.f, 180.f}, {0.f, 1.f}, Delta.Yaw);
 
 		AimingValues.InputYawOffsetTime = FMath::FInterpTo(AimingValues.InputYawOffsetTime, InterpTarget,
 		                                                   DeltaSeconds, Config.InputYawOffsetInterpSpeed);
@@ -264,18 +264,18 @@ void UAnonAnimInstance::UpdateAimingValues(float DeltaSeconds)
 	// Separate the Aiming Yaw Angle into 3 separate Yaw Times. These 3 values are used in the Aim Offset behavior
 	// to improve the blending of the aim offset when rotating completely around the character.
 	// This allows you to keep the aiming responsive but still smoothly blend from left to right or right to left.
-	AimingValues.LeftYawTime = FMath::GetMappedRangeValueClamped<float, float>({0.0f, 180.0f}, {0.5f, 0.0f},
+	AimingValues.LeftYawTime = FMath::GetMappedRangeValueClamped<float, float>({0.f, 180.f}, {.5f, 0.f},
 	                                                             FMath::Abs(SmoothedAimingAngle.X));
-	AimingValues.RightYawTime = FMath::GetMappedRangeValueClamped<float, float>({0.0f, 180.0f}, {0.5f, 1.0f},
+	AimingValues.RightYawTime = FMath::GetMappedRangeValueClamped<float, float>({0.f, 180.f}, {.5f, 1.f},
 	                                                              FMath::Abs(SmoothedAimingAngle.X));
-	AimingValues.ForwardYawTime = FMath::GetMappedRangeValueClamped<float, float>({-180.0f, 180.0f}, {0.0f, 1.0f},
+	AimingValues.ForwardYawTime = FMath::GetMappedRangeValueClamped<float, float>({-180.f, 180.f}, {0.f, 1.f},
 	                                                                SmoothedAimingAngle.X);
 }
 
 void UAnonAnimInstance::UpdateLayerValues()
 {
 	// Get the Aim Offset weight by getting the opposite of the Aim Offset Mask.
-	LayerBlendingValues.EnableAimOffset = FMath::Lerp(1.0f, 0.0f, GetCurveValue(NAME_Mask_AimOffset));
+	LayerBlendingValues.EnableAimOffset = FMath::Lerp(1.f, 0.f, GetCurveValue(NAME_Mask_AimOffset));
 	// Set the Base Pose weights
 	LayerBlendingValues.BasePose_N = GetCurveValue(NAME_BasePose_N);
 	LayerBlendingValues.BasePose_CLF = GetCurveValue(NAME_BasePose_CLF);
@@ -288,9 +288,9 @@ void UAnonAnimInstance::UpdateLayerValues()
 	LayerBlendingValues.Hand_R = GetCurveValue(NAME_Layering_Hand_R);
 	LayerBlendingValues.Hand_L = GetCurveValue(NAME_Layering_Hand_L);
 	// Blend and set the Hand IK weights to ensure they only are weighted if allowed by the Arm layers.
-	LayerBlendingValues.EnableHandIK_L = FMath::Lerp(0.0f, GetCurveValue(NAME_Enable_HandIK_L),
+	LayerBlendingValues.EnableHandIK_L = FMath::Lerp(0.f, GetCurveValue(NAME_Enable_HandIK_L),
 	                                                 GetCurveValue(NAME_Layering_Arm_L));
-	LayerBlendingValues.EnableHandIK_R = FMath::Lerp(0.0f, GetCurveValue(NAME_Enable_HandIK_R),
+	LayerBlendingValues.EnableHandIK_R = FMath::Lerp(0.f, GetCurveValue(NAME_Enable_HandIK_R),
 	                                                 GetCurveValue(NAME_Layering_Arm_R));
 	// Set whether the arms should blend in mesh space or local space.
 	// The Mesh space weight will always be 1 unless the Local Space (LS) curve is fully weighted.
@@ -336,7 +336,7 @@ void UAnonAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFootIKCur
                                                FName IKFootBone, float& CurFootLockAlpha, bool& UseFootLockCurve,
                                                FVector& CurFootLockLoc, FRotator& CurFootLockRot) const
 {
-	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
+	if (GetCurveValue(EnableFootIKCurve) <= 0.f)
 	{
 		return;
 	}
@@ -353,7 +353,7 @@ void UAnonAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFootIKCur
 	else
 	{
 		UseFootLockCurve = GetCurveValue(FootLockCurve) >= 0.99f;
-		FootLockCurveVal = 0.0f;
+		FootLockCurveVal = 0.f;
 	}
 
 	// Step 2: Only update the FootLock Alpha if the new value is less than the current, or it equals 1. This makes it
@@ -374,7 +374,7 @@ void UAnonAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFootIKCur
 
 	// Step 4: If the Foot Lock Alpha has a weight,
 	// update the Foot Lock offsets to keep the foot planted in place while the capsule moves.
-	if (CurFootLockAlpha > 0.0f)
+	if (CurFootLockAlpha > 0.f)
 	{
 		SetFootLockOffsets(DeltaSeconds, CurFootLockLoc, CurFootLockRot);
 	}
@@ -412,16 +412,16 @@ void UAnonAnimInstance::SetPelvisIKOffset(float DeltaSeconds, const FVector& Foo
 {
 	// Calculate the Pelvis Alpha by finding the average Foot IK weight. If the alpha is 0, clear the offset.
 	FootIKValues.PelvisAlpha =
-		(GetCurveValue(NAME_Enable_FootIK_L) + GetCurveValue(NAME_Enable_FootIK_R)) / 2.0f;
+		(GetCurveValue(NAME_Enable_FootIK_L) + GetCurveValue(NAME_Enable_FootIK_R)) / 2.f;
 
-	if (FootIKValues.PelvisAlpha > 0.0f)
+	if (FootIKValues.PelvisAlpha > 0.f)
 	{
 		// Step 1: Set the new Pelvis Target to be the lowest Foot Offset
 		const FVector PelvisTarget = FootOffsetLTarget.Z < FootOffsetRTarget.Z ? FootOffsetLTarget : FootOffsetRTarget;
 
 		// Step 2: Interp the Current Pelvis Offset to the new target value.
 		//Interpolate at different speeds based on whether the new target is above or below the current one.
-		const float InterpSpeed = PelvisTarget.Z > FootIKValues.PelvisOffset.Z ? 10.0f : 15.0f;
+		const float InterpSpeed = PelvisTarget.Z > FootIKValues.PelvisOffset.Z ? 10.f : 15.f;
 		FootIKValues.PelvisOffset =
 			FMath::VInterpTo(FootIKValues.PelvisOffset, PelvisTarget, DeltaSeconds, InterpSpeed);
 	}
@@ -435,13 +435,13 @@ void UAnonAnimInstance::ResetIKOffsets(float DeltaSeconds)
 {
 	// Interp Foot IK offsets back to 0
 	FootIKValues.FootOffset_L_Location = FMath::VInterpTo(FootIKValues.FootOffset_L_Location,
-	                                                      FVector::ZeroVector, DeltaSeconds, 15.0f);
+	                                                      FVector::ZeroVector, DeltaSeconds, 15.f);
 	FootIKValues.FootOffset_R_Location = FMath::VInterpTo(FootIKValues.FootOffset_R_Location,
-	                                                      FVector::ZeroVector, DeltaSeconds, 15.0f);
+	                                                      FVector::ZeroVector, DeltaSeconds, 15.f);
 	FootIKValues.FootOffset_L_Rotation = FMath::RInterpTo(FootIKValues.FootOffset_L_Rotation,
-	                                                      FRotator::ZeroRotator, DeltaSeconds, 15.0f);
+	                                                      FRotator::ZeroRotator, DeltaSeconds, 15.f);
 	FootIKValues.FootOffset_R_Rotation = FMath::RInterpTo(FootIKValues.FootOffset_R_Rotation,
-	                                                      FRotator::ZeroRotator, DeltaSeconds, 15.0f);
+	                                                      FRotator::ZeroRotator, DeltaSeconds, 15.f);
 }
 
 void UAnonAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableFootIKCurve, FName IKFootBone,
@@ -496,11 +496,11 @@ void UAnonAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableFootIKCur
 
 	// Step 2: Interp the Current Location Offset to the new target value.
 	// Interpolate at different speeds based on whether the new target is above or below the current one.
-	const float InterpSpeed = CurLocationOffset.Z > CurLocationTarget.Z ? 30.f : 15.0f;
+	const float InterpSpeed = CurLocationOffset.Z > CurLocationTarget.Z ? 30.f : 15.f;
 	CurLocationOffset = FMath::VInterpTo(CurLocationOffset, CurLocationTarget, DeltaSeconds, InterpSpeed);
 
 	// Step 3: Interp the Current Rotation Offset to the new target value.
-	CurRotationOffset = FMath::RInterpTo(CurRotationOffset, TargetRotOffset, DeltaSeconds, 30.0f);
+	CurRotationOffset = FMath::RInterpTo(CurRotationOffset, TargetRotOffset, DeltaSeconds, 30.f);
 }
 
 void UAnonAnimInstance::RotateInPlaceCheck()
@@ -528,12 +528,12 @@ void UAnonAnimInstance::TurnInPlaceCheck(float DeltaSeconds)
 	if (FMath::Abs(AimingValues.AimingAngle.X) <= TurnInPlaceValues.TurnCheckMinAngle ||
 		CharacterInformation.AimYawRate >= TurnInPlaceValues.AimYawRateLimit)
 	{
-		TurnInPlaceValues.ElapsedDelayTime = 0.0f;
+		TurnInPlaceValues.ElapsedDelayTime = 0.f;
 		return;
 	}
 
 	TurnInPlaceValues.ElapsedDelayTime += DeltaSeconds;
-	const float ClampedAimAngle = FMath::GetMappedRangeValueClamped<float, float>({TurnInPlaceValues.TurnCheckMinAngle, 180.0f},
+	const float ClampedAimAngle = FMath::GetMappedRangeValueClamped<float, float>({TurnInPlaceValues.TurnCheckMinAngle, 180.f},
 	                                                                {
 		                                                                TurnInPlaceValues.MinAngleDelay,
 		                                                                TurnInPlaceValues.MaxAngleDelay
@@ -544,9 +544,9 @@ void UAnonAnimInstance::TurnInPlaceCheck(float DeltaSeconds)
 	if (TurnInPlaceValues.ElapsedDelayTime > ClampedAimAngle)
 	{
 		FRotator TurnInPlaceYawRot = CharacterInformation.AimingRotation;
-		TurnInPlaceYawRot.Roll = 0.0f;
-		TurnInPlaceYawRot.Pitch = 0.0f;
-		TurnInPlace(TurnInPlaceYawRot, 1.0f, 0.0f, false);
+		TurnInPlaceYawRot.Roll = 0.f;
+		TurnInPlaceYawRot.Pitch = 0.f;
+		TurnInPlace(TurnInPlaceYawRot, 1.f, 0.f, false);
 	}
 }
 
@@ -653,7 +653,7 @@ void UAnonAnimInstance::UpdateRagdollValues()
 {
 	// Scale the Flail Rate by the velocity length. The faster the ragdoll moves, the faster the character will flail.
 	const float VelocityLength = GetOwningComponent()->GetPhysicsLinearVelocity(NAME__ALSCharacterAnimInstance__root).Size();
-	FlailRate = FMath::GetMappedRangeValueClamped<float, float>({0.0f, 1000.0f}, {0.0f, 1.0f}, VelocityLength);
+	FlailRate = FMath::GetMappedRangeValueClamped<float, float>({0.f, 1000.f}, {0.f, 1.f}, VelocityLength);
 }
 
 float UAnonAnimInstance::GetAnimCurveClamped(const FName& Name, float Bias, float ClampMin,
@@ -673,10 +673,10 @@ FVelocityBlend UAnonAnimInstance::CalculateVelocityBlend() const
 		FMath::Abs(LocRelativeVelocityDir.Z);
 	const FVector RelativeDir = LocRelativeVelocityDir / Sum;
 	FVelocityBlend Result;
-	Result.F = FMath::Clamp(RelativeDir.X, 0.0f, 1.0f);
-	Result.B = FMath::Abs(FMath::Clamp(RelativeDir.X, -1.0f, 0.0f));
-	Result.L = FMath::Abs(FMath::Clamp(RelativeDir.Y, -1.0f, 0.0f));
-	Result.R = FMath::Clamp(RelativeDir.Y, 0.0f, 1.0f);
+	Result.F = FMath::Clamp(RelativeDir.X, 0.f, 1.f);
+	Result.B = FMath::Abs(FMath::Clamp(RelativeDir.X, -1.f, 0.f));
+	Result.L = FMath::Abs(FMath::Clamp(RelativeDir.Y, -1.f, 0.f));
+	Result.R = FMath::Clamp(RelativeDir.Y, 0.f, 1.f);
 	return Result;
 }
 
@@ -685,7 +685,7 @@ FVector UAnonAnimInstance::CalculateRelativeAccelerationAmount() const
 	// Calculate the Relative Acceleration Amount. This value represents the current amount of acceleration / deceleration
 	// relative to the actor rotation. It is normalized to a range of -1 to 1 so that -1 equals the Max Braking Deceleration,
 	// and 1 equals the Max Acceleration of the Character Movement Component.
-	if (FVector::DotProduct(CharacterInformation.Acceleration, CharacterInformation.Velocity) > 0.0f)
+	if (FVector::DotProduct(CharacterInformation.Acceleration, CharacterInformation.Velocity) > 0.f)
 	{
 		const float MaxAcc = Character->GetCharacterMovement()->GetMaxAcceleration();
 		return CharacterInformation.CharacterActorRotation.UnrotateVector(
@@ -706,7 +706,7 @@ float UAnonAnimInstance::CalculateStrideBlend() const
 	// the movement speed, preventing the character from needing to play a half walk+half run blend.
 	// The curves are used to map the stride amount to the speed for maximum control.
 	const float CurveTime = CharacterInformation.Speed / GetOwningComponent()->GetComponentScale().Z;
-	const float ClampedGait = GetAnimCurveClamped(NAME_W_Gait, -1.0, 0.0f, 1.0f);
+	const float ClampedGait = GetAnimCurveClamped(NAME_W_Gait, -1.0, 0.f, 1.f);
 	const float LerpedStrideBlend =
 		FMath::Lerp(StrideBlend_N_Walk->GetFloatValue(CurveTime), StrideBlend_N_Run->GetFloatValue(CurveTime),
 		            ClampedGait);
@@ -717,7 +717,7 @@ float UAnonAnimInstance::CalculateStrideBlend() const
 float UAnonAnimInstance::CalculateWalkRunBlend() const
 {
 	// Calculate the Walk Run Blend. This value is used within the Blendspaces to blend between walking and running.
-	return Gait.Walking() ? 0.0f : 1.0;
+	return Gait.Walking() ? 0.f : 1.0;
 }
 
 float UAnonAnimInstance::CalculateStandingPlayRate() const
@@ -728,13 +728,13 @@ float UAnonAnimInstance::CalculateStandingPlayRate() const
 	// The value is also divided by the Stride Blend and the mesh scale so that the play rate increases as the stride or scale gets smaller
 	const float LerpedSpeed = FMath::Lerp(CharacterInformation.Speed / Config.AnimatedWalkSpeed,
 	                                      CharacterInformation.Speed / Config.AnimatedRunSpeed,
-	                                      GetAnimCurveClamped(NAME_W_Gait, -1.0f, 0.0f, 1.0f));
+	                                      GetAnimCurveClamped(NAME_W_Gait, -1.f, 0.f, 1.f));
 
 	const float SprintAffectedSpeed = FMath::Lerp(LerpedSpeed, CharacterInformation.Speed / Config.AnimatedSprintSpeed,
-	                                              GetAnimCurveClamped(NAME_W_Gait, -2.0f, 0.0f, 1.0f));
+	                                              GetAnimCurveClamped(NAME_W_Gait, -2.f, 0.f, 1.f));
 
 	return FMath::Clamp((SprintAffectedSpeed / Grounded.StrideBlend) / GetOwningComponent()->GetComponentScale().Z,
-	                    0.0f, 3.0f);
+	                    0.f, 3.f);
 }
 
 float UAnonAnimInstance::CalculateDiagonalScaleAmount() const
@@ -752,7 +752,7 @@ float UAnonAnimInstance::CalculateCrouchingPlayRate() const
 	return FMath::Clamp(
 		CharacterInformation.Speed / Config.AnimatedCrouchSpeed / Grounded.StrideBlend / GetOwningComponent()->
 		GetComponentScale().Z,
-		0.0f, 2.0f);
+		0.f, 2.f);
 }
 
 float UAnonAnimInstance::CalculateLandPrediction() const
@@ -760,20 +760,20 @@ float UAnonAnimInstance::CalculateLandPrediction() const
 	// Calculate the land prediction weight by tracing in the velocity direction to find a walkable surface the character
 	// is falling toward, and getting the 'Time' (range of 0-1, 1 being maximum, 0 being about to land) till impact.
 	// The Land Prediction Curve is used to control how the time affects the final weight for a smooth blend.
-	if (InAir.FallSpeed >= -200.0f)
+	if (InAir.FallSpeed >= -200.f)
 	{
-		return 0.0f;
+		return 0.f;
 	}
 
 	const UCapsuleComponent* CapsuleComp = Character->GetCapsuleComponent();
 	const FVector& CapsuleWorldLoc = CapsuleComp->GetComponentLocation();
 	const float VelocityZ = CharacterInformation.Velocity.Z;
 	FVector VelocityClamped = CharacterInformation.Velocity;
-	VelocityClamped.Z = FMath::Clamp(VelocityZ, -4000.0f, -200.0f);
+	VelocityClamped.Z = FMath::Clamp(VelocityZ, -4000.f, -200.f);
 	VelocityClamped.Normalize();
 
 	const FVector TraceLength = VelocityClamped * FMath::GetMappedRangeValueClamped<float, float>(
-		{0.0f, -4000.0f}, {50.0f, 2000.0f}, VelocityZ);
+		{0.f, -4000.f}, {50.f, 2000.f}, VelocityZ);
 
 	UWorld* World = GetWorld();
 	check(World);
@@ -789,11 +789,11 @@ float UAnonAnimInstance::CalculateLandPrediction() const
 	
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{
-		return FMath::Lerp(LandPredictionCurve->GetFloatValue(HitResult.Time), 0.0f,
+		return FMath::Lerp(LandPredictionCurve->GetFloatValue(HitResult.Time), 0.f,
 		                   GetCurveValue(NAME_Mask_LandPrediction));
 	}
 
-	return 0.0f;
+	return 0.f;
 }
 
 FLeanAmount UAnonAnimInstance::CalculateAirLeanAmount() const
@@ -803,7 +803,7 @@ FLeanAmount UAnonAnimInstance::CalculateAirLeanAmount() const
 	// when transitioning from moving upwards to moving downwards.
 	FLeanAmount CalcLeanAmount;
 	const FVector& UnrotatedVel = CharacterInformation.CharacterActorRotation.UnrotateVector(
-		CharacterInformation.Velocity) / 350.0f;
+		CharacterInformation.Velocity) / 350.f;
 	FVector2D InversedVect(UnrotatedVel.Y, UnrotatedVel.X);
 	InversedVect *= LeanInAirCurve->GetFloatValue(InAir.FallSpeed);
 	CalcLeanAmount.LR = InversedVect.X;
@@ -823,7 +823,7 @@ EMovementDirection UAnonAnimInstance::CalculateMovementDirection() const
 
 	FRotator Delta = CharacterInformation.Velocity.ToOrientationRotator() - CharacterInformation.AimingRotation;
 	Delta.Normalize();
-	return ULocomotionMathLibrary::CalculateQuadrant(MovementDirection, 70.0f, -70.0f, 110.0f, -110.0f, 5.0f, Delta.Yaw);
+	return ULocomotionMathLibrary::CalculateQuadrant(MovementDirection, 70.f, -70.f, 110.f, -110.f, 5.f, Delta.Yaw);
 }
 
 void UAnonAnimInstance::TurnInPlace(const FRotator& TargetRotation, float PlayRateScale, float StartTime,
@@ -840,13 +840,13 @@ void UAnonAnimInstance::TurnInPlace(const FRotator& TargetRotation, float PlayRa
 	{
 		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
-			TargetTurnAsset = TurnAngle < 0.0f
+			TargetTurnAsset = TurnAngle < 0.f
 				                  ? TurnInPlaceValues.N_TurnIP_L90
 				                  : TurnInPlaceValues.N_TurnIP_R90;
 		}
 		else
 		{
-			TargetTurnAsset = TurnAngle < 0.0f
+			TargetTurnAsset = TurnAngle < 0.f
 				                  ? TurnInPlaceValues.N_TurnIP_L180
 				                  : TurnInPlaceValues.N_TurnIP_R180;
 		}
@@ -855,13 +855,13 @@ void UAnonAnimInstance::TurnInPlace(const FRotator& TargetRotation, float PlayRa
 	{
 		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
-			TargetTurnAsset = TurnAngle < 0.0f
+			TargetTurnAsset = TurnAngle < 0.f
 				                  ? TurnInPlaceValues.CLF_TurnIP_L90
 				                  : TurnInPlaceValues.CLF_TurnIP_R90;
 		}
 		else
 		{
-			TargetTurnAsset = TurnAngle < 0.0f
+			TargetTurnAsset = TurnAngle < 0.f
 				                  ? TurnInPlaceValues.CLF_TurnIP_L180
 				                  : TurnInPlaceValues.CLF_TurnIP_R180;
 		}
@@ -873,7 +873,7 @@ void UAnonAnimInstance::TurnInPlace(const FRotator& TargetRotation, float PlayRa
 		return;
 	}
 	PlaySlotAnimationAsDynamicMontage(TargetTurnAsset.Animation, TargetTurnAsset.SlotName, 0.2f, 0.2f,
-	                                  TargetTurnAsset.PlayRate * PlayRateScale, 1, 0.0f, StartTime);
+	                                  TargetTurnAsset.PlayRate * PlayRateScale, 1, 0.f, StartTime);
 
 	// Step 4: Scale the rotation amount (gets scaled in AnimGraph) to compensate for turn angle (If Allowed) and play rate.
 	if (TargetTurnAsset.ScaleTurnAngle)
@@ -889,7 +889,7 @@ void UAnonAnimInstance::TurnInPlace(const FRotator& TargetRotation, float PlayRa
 void UAnonAnimInstance::OnJumped()
 {
 	InAir.bJumped = true;
-	InAir.JumpPlayRate = FMath::GetMappedRangeValueClamped<float, float>({0.0f, 600.0f}, {1.2f, 1.5f}, CharacterInformation.Speed);
+	InAir.JumpPlayRate = FMath::GetMappedRangeValueClamped<float, float>({0.f, 600.f}, {1.2f, 1.5f}, CharacterInformation.Speed);
 
 	GetWorld()->GetTimerManager().SetTimer(OnJumpedTimer, this,
 	                                  &UAnonAnimInstance::OnJumpedDelay, 0.1f, false);
@@ -900,4 +900,34 @@ void UAnonAnimInstance::OnPivot()
 	Grounded.bPivot = CharacterInformation.Speed < Config.TriggerPivotSpeedLimit;
 	GetWorld()->GetTimerManager().SetTimer(OnPivotTimer, this,
 	                                  &UAnonAnimInstance::OnPivotDelay, 0.1f, false);
+}
+
+// ==================== Traversal System ==================== //
+
+bool UAnonAnimInstance::SetTraversalState(const ETraversalState NewState)
+{
+	TraversalState = NewState;
+	
+	return false;
+}
+
+bool UAnonAnimInstance::SetTraversalAction(const ETraversalAction NewAction)
+{
+	TraversalAction = NewAction;
+	
+	return false;
+}
+
+bool UAnonAnimInstance::SetTraversalDirection(const ETraversalDirection NewDirection)
+{
+	TraversalDirection = NewDirection;
+	
+	return false;
+}
+
+bool UAnonAnimInstance::SetClimbStyle(const EClimbStyle NewStyle)
+{
+	ClimbStyle = NewStyle;
+	
+	return false;
 }
